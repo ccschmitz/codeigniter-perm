@@ -1,0 +1,8 @@
+# The registered name of the spark (for informational purposes only).
+name: access
+
+# The current version of this spark
+version: 0.0.1
+
+# The version of CodeIgniter this spark is compatible up to
+compatibility: 2.0.0
