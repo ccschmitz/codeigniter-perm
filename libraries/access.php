@@ -24,6 +24,7 @@ class Access {
 	protected $user_id_session_key = 'user_id';
 	protected $user_roles_session_key = 'user_roles';
 	protected $user_group_session_key = 'user_group';
+	protected $user_group_id_session_key = 'user_group_id';
 
 	public function __construct()
 	{
@@ -32,68 +33,137 @@ class Access {
 		log_message('debug', 'Access class initialized');
 	}
 	
-	public static function in_group($user_id = FALSE)
+	/**
+	 * Checks to see if a user is in a user group
+	 *
+	 * @return bool
+	 **/
+	public function in_group($required_group, $user_id = FALSE)
 	{
-		
+		// check to see if the group is an integer (id) or string
+		if (is_int($required_group))
+		{
+			$user_group = $this->ci->session->userdata($this->user_group_id_session_key);
+		}
+		else
+		{
+			$user_group = $this->ci->session->userdata($this->user_group_session_key);
+		}
+
+		// see if the user is in the group
+		if ($required_group == $user_group)
+		{
+			return TRUE;
+		}
+		else
+		{
+			return FALSE;
+		}
 	}
 
-	public function has_role($role, $user_id = FALSE)
+	/**
+	 * Checks to see if a user has the specified role(s)
+	 *
+	 * Accepts a string as a single role or an array or required roles
+	 * 
+	 * @return bool
+	 **/
+	public function has_role($required_roles, $user_id = FALSE)
 	{
-		
+		// grab the user roles form the session
+		$user_roles = $this->ci->session->userdata($this->user_roles_session_key);
+
+		// if an array of required roles is passed...
+		if (is_array($required_roles))
+		{
+			// check to see if user has all required roles
+			foreach ($required_roles as $role)
+			{
+				if ( ! in_array($role, $user_roles))
+				{
+					return FALSE;
+				}
+			}
+		}
+		elseif (is_string($required_roles)) // a single role is passed in 
+		{
+			if ( ! in_array($required_roles, $user_roles))
+			{
+				return FALSE;
+			}
+		}
+		else // i don't know what you're doing...
+		{
+			show_error('You must pass a string or an array to the has_role method.');
+		}
+
+		return TRUE;
 	}
 
-	public function verify_resource()
-	{
-		
-	}
-
+	/**
+	 * Sets up the user privileges in the session.
+	 * 
+	 * This method should usually be called upon a successful login attempt.
+	 *
+	 * @return null
+	 **/
 	public function setup_user_privileges()
 	{
 		$user_id = $this->ci->session->userdata($this->user_id_session_key);
 
 		if ($this->use_roles)
 		{
+			// create the user roles table if it doesn't exist
+			if ( ! $this->ci->db->table_exists($this->user_roles_table))
+			{
+				$this->configure_database();
+			}
+
 			// pull the roles from the database
 			$user_roles = $this->ci->db
+				->select($this->user_roles_table.'.name AS name')
 				->where($this->user_id_field_in_roles_table, $user_id)
-				->get($this->user_roles_table);
+				->join('user_roles', $this->user_roles_table .'.id = '. $this->roles_to_users_table .'.user_role_id')
+				->get($this->roles_to_users_table)
+				->result();
+			
+			$user_privileges = array();
+			foreach ($user_roles as $role)
+			{
+				array_push($user_privileges, $role->name);
+			}
 
 			if ($user_roles)
 			{
 				// set the roles in the session
-				$this->ci->session->set_userdata($this->user_roles_session_key, $user_roles->result());
-			}
-			else
-			{
-				// if the user roles table exists...
-				if ($this->ci->db->table_exists($this->user_roles_table))
-				{
-					return FALSE;
-				}
-				else // create the user roles table
-				{
-					$this->configure_database();
-				}
-			}
-
-			if ($this->use_groups)
-			{
-				// setup the user group in the session
-				$user_group = $this->ci->db
-					->select($this->user_group_id_field .','. $this->user_groups_table .'.name AS'. $this->user_group_session_key)
-					->where('id', $user_id)
-					->limit(1)
-					->join($this->user_groups_table, $this->user_groups_table.'.id = '.$this->users_table.'.'.$this->user_group_id_field)
-					->get($this->users_table)
-					->result();
-				
-				$this->ci->session->set_userdata($this->user_group_session_key, $user_group->{$this->user_group_session_key});
+				$this->ci->session->set_userdata($this->user_roles_session_key, $user_privileges);
 			}
 		}
-		
-		// if unsuccessful, configure the database
+
+		if ($this->use_groups)
+		{
+			// setup the user group in the session
+			$user = $this->ci->db
+				->select($this->users_table .'.*,'. $this->user_groups_table .'.name AS '. $this->user_group_session_key .','. $this->user_groups_table .'.id AS '. $this->user_group_id_session_key)
+				->where($this->users_table.'.id', $user_id)
+				->join($this->user_groups_table, $this->user_groups_table.'.id = '.$this->users_table.'.'.$this->user_group_id_field)
+				->limit(1)
+				->get($this->users_table)
+				->row();
+			
+			if ($user)
+			{
+				$this->ci->session->set_userdata($this->user_group_session_key, $user->{$this->user_group_session_key});
+				$this->ci->session->set_userdata($this->user_group_id_session_key, $user->{$this->user_group_id_session_key});
+			}
+		}
 	}
 
+	/**
+	 * Sets up the database with the required fields/tables to use the library
+	 *
+	 * @return null
+	 **/
 	private function configure_database()
 	{
 		$this->ci->load->dbforge();
@@ -120,7 +190,8 @@ class Access {
 				)
 			);
 			$this->ci->dbforge->add_field($fields);
-			$this->ci->dbforge->create_table($this->user_roles_table);
+			$this->ci->dbforge->add_key('id', TRUE);
+			$this->ci->dbforge->create_table($this->user_roles_table, TRUE);
 
 			// setup the roles_to_users table
 			$fields = array(
@@ -144,11 +215,12 @@ class Access {
 				)
 			);
 			$this->ci->dbforge->add_field($fields);
-			$this->ci->dbforge->create_table($this->roles_to_users_table);
+			$this->ci->dbforge->add_key('id', TRUE);
+			$this->ci->dbforge->create_table($this->roles_to_users_table, TRUE);
 		}
 
 		// if user groups are being used...
-		if ($this->user_groups)
+		if ($this->use_groups)
 		{
 			// setup the user_groups table
 			$fields = array(
@@ -168,20 +240,17 @@ class Access {
 					'type' => 'DATETIME'
 				)
 			);
-			$this->ci->dbforge->add_field();
-			$this->ci->dbforge->create_table($this->user_groups_table);
+			$this->ci->dbforge->add_field($fields);
+			$this->ci->dbforge->add_key('id', TRUE);
+			$this->ci->dbforge->create_table($this->user_groups_table, TRUE);
 
 			// add the group_id field to the users table
-			$this->ci->dbforge->add_column(
-				$this->users_table, array(
-					$this->user_group_id_field => array('type' => 'INT')
+			$user_group_id_field = array(
+				$this->user_group_id_field => array(
+					'type' => 'INT'
 				)
 			);
+			$this->ci->dbforge->add_column($this->users_table, $user_group_id_field);
 		}
-	}
-
-	private function write_roles_to_config_file()
-	{
-		
 	}
 }
