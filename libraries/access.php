@@ -171,6 +171,8 @@ class Access {
 		// if user roles are used...
 		if ($this->use_roles)
 		{
+			echo ('<p>Looks like you are using user roles. Let me setup the tables for user roles and role to user relationships for you!</p><ul>');
+
 			// setup the user_roles table
 			$fields = array(
 				'id' => array(
@@ -191,7 +193,15 @@ class Access {
 			);
 			$this->ci->dbforge->add_field($fields);
 			$this->ci->dbforge->add_key('id', TRUE);
-			$this->ci->dbforge->create_table($this->user_roles_table, TRUE);
+
+			if ($this->ci->dbforge->create_table($this->user_roles_table, TRUE))
+			{
+				echo '<li>The user roles table was created successfully!</li>';
+			}
+			else
+			{
+				echo '<li>The user roles table could not be created...</li>';
+			}
 
 			// setup the roles_to_users table
 			$fields = array(
@@ -216,12 +226,25 @@ class Access {
 			);
 			$this->ci->dbforge->add_field($fields);
 			$this->ci->dbforge->add_key('id', TRUE);
-			$this->ci->dbforge->create_table($this->roles_to_users_table, TRUE);
+
+			if ($this->ci->dbforge->create_table($this->roles_to_users_table, TRUE))
+			{
+				echo '<li>The roles to users relationships table was created successfully!</li>';
+			}
+			else
+			{
+				echo '<li>The roles to users table could not be created...</li>';
+			}
+
+			echo '</ul>';
 		}
 
 		// if user groups are being used...
 		if ($this->use_groups)
 		{
+			echo '<p>I can\'t find the droids I\'m looking for.... It looks like you haven\'t setup your database yet for the access library. Let me take care of that for you.</p>';
+			echo '<p>Looks like you are using user groups... Let me setup the user groups table and the group ID field in the users table for you!</p><ul>';
+
 			// setup the user_groups table
 			$fields = array(
 				'id' => array(
@@ -242,7 +265,15 @@ class Access {
 			);
 			$this->ci->dbforge->add_field($fields);
 			$this->ci->dbforge->add_key('id', TRUE);
-			$this->ci->dbforge->create_table($this->user_groups_table, TRUE);
+
+			if ($this->ci->dbforge->create_table($this->user_groups_table, TRUE))
+			{
+				echo '<li>The user groups table was created successfully!</li>';
+			}
+			else
+			{
+				echo '<li>The user groups table could not be created...</li>';
+			}
 
 			// add the group_id field to the users table
 			$user_group_id_field = array(
@@ -250,7 +281,17 @@ class Access {
 					'type' => 'INT'
 				)
 			);
-			$this->ci->dbforge->add_column($this->users_table, $user_group_id_field);
+			
+			if ($this->ci->dbforge->add_column($this->users_table, $user_group_id_field))
+			{
+				echo '<li>The group ID field was added to the users table successfully!</li>';
+			}
+			else
+			{
+				echo '<li>The group ID field could not be added to the users table...</li>';
+			}
 		}
+
+		echo '<p><strong>That\'s all. Show\'s over!</strong></p>';
 	}
 }
