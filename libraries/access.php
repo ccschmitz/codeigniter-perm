@@ -123,7 +123,7 @@ class Access {
 			$user_roles = $this->ci->db
 				->select($this->user_roles_table.'.name AS name')
 				->where($this->user_id_field_in_roles_table, $user_id)
-				->join('user_roles', $this->user_roles_table .'.id = '. $this->roles_to_users_table .'.user_role_id')
+				->join($this->user_roles_table, $this->user_roles_table .'.id = '. $this->roles_to_users_table .'.user_role_id')
 				->get($this->roles_to_users_table)
 				->result();
 			
