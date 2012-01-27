@@ -185,6 +185,7 @@ class Access {
 				),
 				'name' => array(
 					'type' => 'VARCHAR',
+					'constraint' => 100
 				),
 				'date_created' => array(
 					'type' => 'DATETIME'
@@ -255,7 +256,8 @@ class Access {
 					'auto_increment' => TRUE
 				),
 				'name' => array(
-					'type' => 'VARCAHR'
+					'type' => 'VARCAHR',
+					'constraint' => 100
 				),
 				'date_created' => array(
 					'type' => 'DATETIME'
