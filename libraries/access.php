@@ -167,6 +167,8 @@ class Access {
 	private function configure_database()
 	{
 		$this->ci->load->dbforge();
+			
+		echo '<p>I can\'t find the droids I\'m looking for.... It looks like you haven\'t setup your database yet for the access library. Let me take care of that for you.</p>';
 
 		// if user roles are used...
 		if ($this->use_roles)
@@ -182,7 +184,7 @@ class Access {
 					'auto_increment' => TRUE
 				),
 				'name' => array(
-					'type' => 'INT'
+					'type' => 'VARCHAR',
 				),
 				'date_created' => array(
 					'type' => 'DATETIME'
@@ -242,7 +244,6 @@ class Access {
 		// if user groups are being used...
 		if ($this->use_groups)
 		{
-			echo '<p>I can\'t find the droids I\'m looking for.... It looks like you haven\'t setup your database yet for the access library. Let me take care of that for you.</p>';
 			echo '<p>Looks like you are using user groups... Let me setup the user groups table and the group ID field in the users table for you!</p><ul>';
 
 			// setup the user_groups table
@@ -254,7 +255,7 @@ class Access {
 					'auto_increment' => TRUE
 				),
 				'name' => array(
-					'type' => 'INT'
+					'type' => 'VARCAHR'
 				),
 				'date_created' => array(
 					'type' => 'DATETIME'
