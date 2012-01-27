@@ -1,7 +1,7 @@
 A simple access control library for CodeIgniter.
 
 * Group and/or role-based controls
-* Controlled by config file or DB
+* Automatic database configuration
 * Zero configuration (or darn close to it)
 
 ### Prerequisites
