@@ -232,14 +232,12 @@ class Access {
 
 			if ($this->ci->dbforge->create_table($this->roles_to_users_table, TRUE))
 			{
-				echo '<li>The roles to users relationships table was created successfully!</li>';
+				echo '<li>The roles to users relationships table was created successfully!</li></ul>';
 			}
 			else
 			{
-				echo '<li>The roles to users table could not be created...</li>';
+				echo '<li>The roles to users table could not be created...</li></ul>';
 			}
-
-			echo '</ul>';
 		}
 
 		// if user groups are being used...
@@ -295,6 +293,6 @@ class Access {
 			}
 		}
 
-		echo '<p><strong>That\'s all. Show\'s over!</strong></p>';
+		echo '<p><strong>That\'s all. Show\'s over. You\'re set to jet.</strong></p>';
 	}
 }
