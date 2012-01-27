@@ -256,7 +256,7 @@ class Access {
 					'auto_increment' => TRUE
 				),
 				'name' => array(
-					'type' => 'VARCAHR',
+					'type' => 'VARCHAR',
 					'constraint' => 100
 				),
 				'date_created' => array(
