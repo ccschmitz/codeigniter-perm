@@ -166,6 +166,12 @@ class Access {
 	 **/
 	private function configure_database()
 	{
+		// check to make sure there is a users table
+		if ( ! $this->ci->db->table_exists($this->users_table))
+		{
+			show_error('You need to have a users table setup in order to use the access control library.');
+		}
+
 		$this->ci->load->dbforge();
 			
 		echo '<p>I can\'t find the droids I\'m looking for.... It looks like you haven\'t setup your database yet for the access library. Let me take care of that for you.</p>';
