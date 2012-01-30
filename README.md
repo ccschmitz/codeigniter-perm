@@ -38,12 +38,14 @@ Verify a user has multiple required roles with an array:
 
 Verify a user has one of the roles in a hierarchy of roles:
 
-	// hierarchy is: admin => users => create
-	$required_roles = 'admin:users:create';
+```php
+// hierarchy is: admin => users => create
+$required_roles = 'admin:users:create';
 
-	// returns true if a user has any of the roles in the hierarchy
-	// starts at the top of the hierarchy and returns true as soon as it finds a required role
-	$this->access->has_roles($required_roles);
+// returns true if a user has any of the roles in the hierarchy
+// starts at the top of the hierarchy and returns true as soon as it finds a required role
+$this->access->has_roles($required_roles);
+```
 
 > **Note:** You can use `has_role` and `has_roles` interchangeably. `has_roles` is just a convenience method.
 
