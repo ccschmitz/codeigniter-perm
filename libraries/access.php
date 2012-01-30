@@ -100,6 +100,16 @@ class Access {
 	}
 
 	/**
+	 * A convenience method
+	 *
+	 * @return void
+	 **/
+	public function has_roles($required_roles)
+	{
+		$this->has_role($required_roles);
+	}
+
+	/**
 	 * Checks to see if the user has one of the required roles.
 	 *
 	 * This is what allows for the hierarchy or roles.
