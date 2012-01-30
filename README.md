@@ -15,8 +15,9 @@ You can use the name of the group or the group's ID
 	$this->access->in_group(3);
 
 or:
-
+	```php
 	$this->access->in_group('admin');
+	```
 
 ### Roles
 
