@@ -3,6 +3,7 @@
 class Access {
 
 	protected $ci;
+	protected $user_roles;
 
 	// the users table
 	protected $users_table = 'users';
@@ -13,12 +14,10 @@ class Access {
 
 	// db config
 	protected $user_roles_table = 'user_roles';
+	protected $user_groups_table = 'user_groups';
 	protected $user_group_id_field = 'group_id';
 	protected $user_id_field_in_roles_table = 'user_id';
-
 	protected $roles_to_users_table = 'roles_to_users';
-
-	protected $user_groups_table = 'user_groups';
 
 	// session variables
 	protected $user_id_session_key = 'user_id';
@@ -71,7 +70,7 @@ class Access {
 	public function has_role($required_roles, $user_id = FALSE)
 	{
 		// grab the user roles form the session
-		$user_roles = $this->ci->session->userdata($this->user_roles_session_key);
+		$this->user_roles = $this->ci->session->userdata($this->user_roles_session_key);
 
 		// if an array of required roles is passed...
 		if (is_array($required_roles))
@@ -79,15 +78,15 @@ class Access {
 			// check to see if user has all required roles
 			foreach ($required_roles as $role)
 			{
-				if ( ! in_array($role, $user_roles))
+				if ( ! $this->check_user_has_required_role($role))
 				{
 					return FALSE;
 				}
 			}
 		}
-		elseif (is_string($required_roles)) // a single role is passed in 
+		elseif (is_string($required_roles))
 		{
-			if ( ! in_array($required_roles, $user_roles))
+			if ( ! $this->check_user_has_required_role($required_roles))
 			{
 				return FALSE;
 			}
@@ -98,6 +97,31 @@ class Access {
 		}
 
 		return TRUE;
+	}
+
+	/**
+	 * Checks to see if the user has one of the required roles.
+	 *
+	 * This is what allows for the hierarchy or roles.
+	 *
+	 * @return bool
+	 **/
+	private function check_user_has_required_role($required_roles)
+	{
+		// turn the roles hierarchy into an array
+		$roles = explode(':', $required_roles);
+
+		// check if the user has the required roles
+		foreach ($roles as $role)
+		{
+			// if they have one of the required roles, they should be all good
+			if (in_array($role, $this->user_roles))
+			{
+				return TRUE;
+			}
+		}
+
+		return FALSE;
 	}
 
 	/**
