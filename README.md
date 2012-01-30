@@ -4,9 +4,46 @@ A simple access control library for CodeIgniter.
 * Automatic database configuration
 * Zero configuration (or darn close to it)
 
-### Prerequisites
+## Usage
 
-* Roles *must* be stored in the database in order to set them in the session on login.
+You can set group or role-based controls.
+
+### Groups
+
+You can use the name of the group or the group's ID
+
+	$this->access->in_group(3);
+
+or:
+
+	$this->access->in_group('admin');
+
+### Roles
+
+You can use hierarchical roles, an array of multiple required roles, or just the name of the role you want to check.
+
+Verify a user has a single role with a string:
+
+	// returns true if the user has the required role
+	$this->access->has_roles('users');
+
+Verify a user has multiple required roles with an array:
+
+	$required_roles = array('admin', 'users', 'create');
+	
+	// returns true only if user has all roles in the array
+	$this->access->has_role($required_roles);
+
+Verify a user has one of the roles in a hierarchy of roles:
+
+	// hierarchy is: admin => users => create
+	$required_roles = 'admin:users:create';
+
+	// returns true if a user has any of the roles in the hierarchy
+	// starts at the top of the hierarchy and returns true as soon as it finds a required role
+	$this->access->has_roles($required_roles);
+
+> **Note:** You can use `has_role` and `has_roles` interchangeably. `has_roles` is just a convenience method.
 
 ## Database Configuration
 
