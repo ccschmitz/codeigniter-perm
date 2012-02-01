@@ -25,14 +25,14 @@ You can use hierarchical roles, an array of multiple required roles, or just the
 Verify a user has a single role with a string:
 
 	// returns true if the user has the required role
-	$this->access->has_roles('users');
+	$this->access->has_role('users');
 
 Verify a user has multiple required roles with an array:
 
 	$required_roles = array('admin', 'users', 'create');
 	
 	// returns true only if user has all roles in the array
-	$this->access->has_role($required_roles);
+	$this->access->has_roles($required_roles);
 
 Verify a user has one of the roles in a hierarchy of roles:
 
