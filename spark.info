@@ -1,11 +1,4 @@
-# The registered name of the spark (for informational purposes only).
 name: perm
-
-# The current version of this spark
 version: 0.1.0
-
-# The version of CodeIgniter this spark is compatible with
 compatibility: 2.0.0
-
-# tags
 tags: ["access", "acl", "access control"]
