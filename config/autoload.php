@@ -1,3 +1,3 @@
 <?php
 
-$autoload['libraries'] = array('access');
+$autoload['libraries'] = array('perm', 'session');

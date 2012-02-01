@@ -1,6 +1,6 @@
 <?php
 
-class Access {
+class Perm {
 
 	protected $ci;
 	protected $user_roles;
