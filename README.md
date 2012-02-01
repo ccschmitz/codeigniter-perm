@@ -34,6 +34,6 @@ You can also pass multiple required roles as an array:
 
 > **Note:** You can use `has_role()` and `has_roles()` interchangeably. The `has_roles()` method maps to `has_role()`.
 
-If you want to pass a hierarchy of roles, you can do that by separating each role with a color (`:`). If a user has any of the roles in the hierarchy, the method will return true.
+If you want to pass a hierarchy of roles, you can do that by separating each role with a colon (`:`). If a user has any of the roles in the hierarchy, the method will return true.
 
 	$this->perm->has_role('admin:users:users_create');
