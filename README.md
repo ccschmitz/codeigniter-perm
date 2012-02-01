@@ -1,10 +1,11 @@
+> Is that a perm?
+
 A simple access control library for CodeIgniter. Here's a quick rundown of the features:
 
-* Ability to use group and/or role-based controls
-* Ability to validate single or multiple required roles
-* Ability to validate hierarchical or optional roles
+* Use group and/or role-based controls
+* Validate single or multiple required roles
+* Validate hierarchical or optional roles
 * Automatic database configuration
-* Zero configuration (or darn close to it)
 
 ## Usage
 
