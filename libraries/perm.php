@@ -27,7 +27,7 @@ class Perm {
 
 	public function __construct()
 	{
-		$this->ci = get_instance();
+		$this->ci =& get_instance();
 
 		log_message('debug', 'Access class initialized');
 	}
