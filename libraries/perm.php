@@ -71,7 +71,11 @@ class Perm {
 	{
 		// grab the user roles form the session
 		$this->user_roles = $this->ci->session->userdata($this->user_roles_session_key);
-
+		if(empty($this->user_roles)) // if the variable is empty don't bother checking
+		{
+			return FALSE;
+		}
+		
 		// if an array of required roles is passed...
 		if (is_array($required_roles))
 		{
